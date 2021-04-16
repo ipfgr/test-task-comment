@@ -1,30 +1,39 @@
 <template>
-    <div class="modal hide">
+    <div class="modal" >
         <div @click="editComment" class="edit-modal buttons">Edit comment</div>
         <div @click="deleteComment" class="delete-modal buttons">Delete comment</div>
     </div>
+
 </template>
 
 <script>
     export default {
         name: "Modal.vue",
+        props:{
+            modalVisible: Boolean,
+        },
         methods:{
             editComment(){
-                console.log("Edit")
+            this.$emit("modal-trigger", "edit")
             },
             deleteComment(){
-                console.log("Delete")
+                if(confirm(`Are you sure that's want delete this comment ?`)){
+                    this.$emit("modal-trigger", "delete")
+                }
             }
+        },
+        computed: {
+
         }
     }
 </script>
 
 <style scoped>
     .modal {
+        z-index:100;
         position: absolute;
         right: 10%;
-        top: 0;
-        display: flex;
+        display: none;
         flex-direction: column;
         justify-content: center;
         width: 200px;
@@ -52,5 +61,6 @@
 
 
     }
+
 
 </style>

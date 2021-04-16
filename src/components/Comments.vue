@@ -1,5 +1,6 @@
 <template>
-    <div class="comments-body" >
+    <div class="comments-body">
+
         <div class="wrapper">
             <div class="comments-header">
                 <div class="think">
@@ -9,7 +10,6 @@
                 <div class="change-button">
                     <button class="btn btn-change">Change Choosing Stage</button>
                 </div>
-
             </div>
             <div class="line"></div>
             <div class="comments-add">
@@ -25,7 +25,7 @@
             <div class="comments-view">
                 <ul >
                     <li v-for="comment in reversedCommentsArr" :key="comment.id">
-                        <Comment :comment="comment"/>
+                        <Comment :comment="comment" @modal-trigger="triggersHandler"/>
                     </li>
                 </ul>
             </div>
@@ -36,12 +36,13 @@
 
 <script>
     import Comment from "@/components/Comment"
+    
     export default {
         name: "Comments.vue",
 
         data(){
             return{
-            commentText: "",
+                commentText: "",
                 commentsArr: [],
                 currentUser: "Illia Piliugin",
             }
@@ -65,43 +66,74 @@
         },
 
         methods: {
+
+
+            //Handler for modal delete/edit buttons
+            triggersHandler(task, id){
+               // Delete task from array
+               if(task === "delete"){
+                   this.commentsArr.forEach((el,idx) => {
+                       if (el.id === id){
+                           this.commentsArr.splice(idx,1)
+                       }
+                   })
+               }
+               //Edit existing task
+               if (task === "edit"){
+                   const buttons = document.querySelector(".comment-control-buttons")
+                   let commentToEdit = {}
+                   this.commentsArr.forEach((comment,idx) => {
+                       if(parseInt(comment.id) === id){
+                           commentToEdit = comment
+                           this.commentsArr.splice(idx,1)
+                           return 1
+                       }
+                   })
+                   this.commentText = commentToEdit.comment
+                   buttons.classList.remove("hide")
+               }
+            },
+            //Show save/cancel buttons when focus on input
             showButtons(){
                 const buttons = document.querySelector(".comment-control-buttons")
                 buttons.classList.remove("hide")
             },
+            //Press cancel button
             cancelComment(){
                 const buttons = document.querySelector(".comment-control-buttons")
                 this.commentText = ""
                 buttons.classList.add("hide")
             },
+            //Add new comment to array
             addComment(){
                 const buttons = document.querySelector(".comment-control-buttons")
                 if (this.commentText !== ""){
-                    this.commentsArr.push({id:Date.now(), comment:this.commentText, date: Date().substr(0, 15), user: this.currentUser})
-                    console.log(this.commentText)
+                    const comment = {id:Date.now(), comment:this.commentText, date: Date().substr(0, 15), user: this.currentUser}
+                    this.commentsArr.push(comment)
                     this.commentText = ""
                     buttons.classList.add("hide")
                 }
                 else alert("Please add comment text")
-            }
+            },
+
         }
     }
 </script>
 
 <style scoped>
-    :root{
-        --green: #3db426
-    }
 
     .comments-body{
         background-color: #edfcd2;
         width: 500px;
-        height: 350px;
+        min-height: auto;
         border-radius: 5px;
         border-left: 6px solid #61b634;
         /*border-left-color: #4ce82e;*/
         /*border-left-width: 3px;*/
     }
+
+
+
     .wrapper{
         margin: 20px 30px;
     }
@@ -181,6 +213,7 @@
         cursor:pointer;
         border:1px solid orange;
     }
+
 
 
 
